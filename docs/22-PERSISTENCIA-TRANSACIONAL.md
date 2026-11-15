@@ -1,6 +1,6 @@
 # 22 — Banco de dados e movimentação transacional
 
-**Estado:** IMPLEMENTADO COMO MIGRATIONS NÃO APLICADAS. Não existe banco de desenvolvimento provisionado nem testes de integração SQL executados.
+**Estado:** MIGRATIONS TESTADAS EM POSTGRESQL EFÊMERO NO GITHUB ACTIONS; não aplicadas em Neon nem produção.
 
 ## Arquivos
 - `database/migrations/0001_initial.sql`: tenants, usuários, associações e papéis, produtos, saldos, movimentos e constraints de isolamento por chave composta.
@@ -16,7 +16,7 @@
 ## Bloqueios de segurança antes de uso real
 **A função não autentica a identidade do ator.** Um cliente com acesso SQL direto poderia enviar o UUID de outro usuário autorizado. Por isso, não conceder EXECUTE a clientes não confiáveis; invocar somente por serviço server-side que valida sessão e associação. Implementar RLS/roles de banco e políticas de privilégios, revisar grants padrão de funções PostgreSQL e testar antes de exposição.
 
-**Não executado:** SQL em PostgreSQL/Neon, testes concorrentes, migração/rollback, backup ou deploy. Os scripts são propostas revisáveis; não declarar persistência funcional.
+**Validado:** smoke SQL em PostgreSQL 16 efêmero no job `postgres-smoke` do workflow #38; inclui migrações, idempotência, permissões e FK multiempresa. **Não executado:** testes concorrentes, migração/rollback em Neon, backup ou deploy. Os scripts são propostas revisáveis; não declarar persistência funcional.
 
 ## Próximas validações
 1. Banco PostgreSQL efêmero e execução de ambas migrations em CI.
