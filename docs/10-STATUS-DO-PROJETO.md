@@ -17,7 +17,7 @@
 | P1 | Levantar processos e equipamentos do mercadinho | Bloqueada externamente | Entrevista/visita |
 | P1 | Avaliar obrigações fiscais de SC | Bloqueada externamente | Especialista fiscal |
 | P2 | Definir escopo de MVP com critérios de aceite | A validar | Descoberta |
-| P2 | Implementar fundação multiempresa e autenticação | Em andamento | Guardas de domínio e testes adicionados; autenticação real ainda pendente |
+| P2 | Implementar fundação multiempresa e autenticação | Em andamento | Migrations e RBAC puro criados; autenticação server-side ainda pendente |
 
 ## Regras de atualização
 Registrar para cada tarefa: data, branch, commit, testes realmente executados, CI, riscos, pendências e próxima ação. Não declarar fases concluídas por mera documentação. Consultar `05-ROADMAP.md`.
@@ -75,3 +75,11 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 ## Fechamento de validação do lote
 - Workflow #25 (`43751117701`) no commit `81cd5fa`: **completed/success**. Correção do typecheck confirmada no GitHub Actions.
 - Nenhuma implantação ou alteração em produção. Próxima etapa permanece persistência transacional e autorização server-side; não confundir guardas puras com isolamento no banco.
+
+## Ciclo de persistência — 2026-11-15
+- Workflow #26 estava em execução na consulta inicial; conclusão não confirmada neste registro.
+- Migrations `0001_initial.sql` e `0002_stock_posting.sql` criadas: entidades multiempresa, integridade referencial, função transacional de estoque com idempotência.
+- Política RBAC pura e testes adicionados (`authorization.mjs`, `authorization.test.mjs`).
+- Smoke SQL em `tests/postgres_smoke.sql` e job CI com PostgreSQL 16 efêmero; **aguardando resultado**.
+- Segurança: a função SQL não autentica o ator. NÃO expor execução a clientes; requer sessão verificada no servidor, privilégio mínimo e revisão de RLS.
+- Próximas cinco tarefas: (1) corrigir CI PostgreSQL e typecheck se falharem; (2) adicionar testes de concorrência SQL; (3) implementar sessão e autorização server-side; (4) testar RLS/grants de menor privilégio; (5) integrar serviço de estoque ao banco de desenvolvimento, sem deploy.
