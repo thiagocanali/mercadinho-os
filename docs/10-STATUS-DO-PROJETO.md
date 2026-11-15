@@ -12,7 +12,7 @@
 |---|---|---|---|
 | P0 | Formalizar execução autônoma, limites e retomada | Validada | Arquivos e PR #1; CI no commit 493863e: sucesso |
 | P1 | Auditar árvore de código, scripts, dependências e CI | Em andamento | Repositório documental; package.json criado para testes Node, Nuxt ainda não configurado |
-| P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Validada | GitHub Actions `43750516460`: sucesso com testes Python, validação documental e Node |
+| P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Em correção | Workflow #20 falhou no typecheck por tsconfig ausente; correção enviada, CI pendente |
 | P1 | Validar arquitetura Cloudflare + Neon + ORM com prova técnica | Em andamento | Nuxt build validado no workflow #16; Cloudflare/Neon pendentes |
 | P1 | Levantar processos e equipamentos do mercadinho | Bloqueada externamente | Entrevista/visita |
 | P1 | Avaliar obrigações fiscais de SC | Bloqueada externamente | Especialista fiscal |
@@ -63,3 +63,11 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - CI passa a executar `npm run typecheck` antes de `npm run build`. **Ainda sem evidência de aprovação do novo HEAD**.
 - **Limitação crítica:** guardas de domínio não são autenticação nem RLS; não disponibilizar endpoints multiempresa com dados reais.
 - Próxima tarefa: confirmar typecheck e testes no novo HEAD; corrigir falhas; avançar para persistência e autorização server-side em ambiente de desenvolvimento.
+
+## Ciclo em lote — 2026-11-15
+- Auditoria: workflow #20 (`43750901624`) **failure** exclusivamente na etapa `Typecheck Nuxt`; testes Python, validação documental, instalação e testes Node passaram; build foi pulado.
+- Correção: criado `tsconfig.json` e comando `nuxt prepare && nuxt typecheck`.
+- Implementado domínio de estoque em `src/domain/inventory.mjs` com testes para entrada, saída, isolamento multiempresa, saldo insuficiente, overflow e dados inválidos.
+- Criados `docs/20-ESTOQUE-DOMINIO.md` e `docs/21-PROVA-TECNICA-INFRA.md` para critérios e limitações.
+- **Pendente:** confirmar testes, typecheck e build do HEAD atualizado; nenhuma migração, integração Neon, Cloudflare ou deploy.
+- **Próximas 5 tarefas:** (1) validar CI do HEAD e corrigir erros; (2) verificar typecheck e build Nuxt; (3) estruturar esquema SQL multiempresa com constraints; (4) criar camada de repositório server-side com escopo derivado da sessão; (5) testar concorrência e idempotência de movimentos em banco de desenvolvimento.
