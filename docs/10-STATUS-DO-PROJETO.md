@@ -13,7 +13,7 @@
 | P0 | Formalizar execução autônoma, limites e retomada | Validada | Arquivos e PR #1; CI no commit 493863e: sucesso |
 | P1 | Auditar árvore de código, scripts, dependências e CI | Em andamento | Repositório documental; package.json criado para testes Node, Nuxt ainda não configurado |
 | P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Validada | GitHub Actions `43750516460`: sucesso com testes Python, validação documental e Node |
-| P1 | Validar arquitetura Cloudflare + Neon + ORM com prova técnica | A validar | Escolha e limites dos serviços |
+| P1 | Validar arquitetura Cloudflare + Neon + ORM com prova técnica | Em andamento | Scaffold Nuxt 4 criado; build e integração Cloudflare/Neon ainda não validados |
 | P1 | Levantar processos e equipamentos do mercadinho | Bloqueada externamente | Entrevista/visita |
 | P1 | Avaliar obrigações fiscais de SC | Bloqueada externamente | Especialista fiscal |
 | P2 | Definir escopo de MVP com critérios de aceite | A validar | Descoberta |
@@ -49,3 +49,10 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Workflow `43750516460` no commit `5d2d6aa`: **completed/success**; incluiu testes do validador, checagem documental e testes de domínio Node.
 - A implementação monetária é isolada e ainda não está integrada a Nuxt, banco ou PDV. Regras fiscais e produtos por peso continuam **A VALIDAR**.
 - Próxima prioridade: scaffold de aplicação, prova técnica Cloudflare/Neon e testes de autorização multiempresa, sem deploy de produção.
+
+## Execução — scaffold Nuxt 4
+- Criados `nuxt.config.ts`, `app/app.vue`, `app/pages/index.vue`, `app/assets/css/main.css`, `.gitignore` e `.env.example`.
+- `package.json` atualizado para Nuxt 4.6.4, TypeScript e Vue TypeScript; Node >=22.21.0.
+- Workflow configurado para instalar dependências e executar `npm run build` em CI, sem deploy.
+- **Não validado:** instalação, build e compatibilidade Cloudflare/Neon; a página é apenas institucional, sem login, PDV ou armazenamento.
+- **Próxima ação:** confirmar GitHub Actions do HEAD, corrigir erros de instalação/build e definir adapter Cloudflare após prova técnica.
