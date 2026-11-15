@@ -45,5 +45,7 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Test domain logic
         run: npm test
+      - name: Typecheck Nuxt
+        run: npm run typecheck
       - name: Build Nuxt
         run: npm run build
