@@ -63,4 +63,4 @@ BEGIN
     RAISE EXCEPTION 'expected cross-tenant FK rejection';
   EXCEPTION WHEN foreign_key_violation THEN NULL;
   END;
-END $;
+END $$;
