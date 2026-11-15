@@ -10,9 +10,9 @@
 ## Fila priorizada
 | Prioridade | Tarefa | Estado | Dependência |
 |---|---|---|---|
-| P0 | Formalizar execução autônoma, limites e retomada | Em andamento | Nenhuma |
+| P0 | Formalizar execução autônoma, limites e retomada | Validada | Arquivos e PR #1; CI no commit 493863e: sucesso |
 | P1 | Auditar árvore de código, scripts, dependências e CI | Em andamento | Inspeção inicial: package.json e src/app.vue ausentes; auditoria completa pendente |
-| P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Em andamento | Validador e workflow enviados; execução CI ainda não confirmada |
+| P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Em andamento | Workflow documental passou em 493863e; testes de regressão adicionados, CI do novo HEAD pendente |
 | P1 | Validar arquitetura Cloudflare + Neon + ORM com prova técnica | A validar | Escolha e limites dos serviços |
 | P1 | Levantar processos e equipamentos do mercadinho | Bloqueada externamente | Entrevista/visita |
 | P1 | Avaliar obrigações fiscais de SC | Bloqueada externamente | Especialista fiscal |
@@ -30,3 +30,10 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Consulta ao HEAD `9ddefb6180ba7c357fdb9153b12802dcb889dfdb`: nenhuma execução de workflow e nenhum status de commit retornados; **não considerar CI aprovada**.
 - Nenhum deploy ou alteração em produção.
 - Próxima ação: verificar execução do workflow no GitHub e corrigir eventuais falhas; depois auditar demais arquivos e definir a fundação técnica conforme decisões pendentes.
+
+## Retomada — 2026-11-15
+- **Validado no GitHub:** execução Actions `43750265278`, job `validate` concluído com sucesso para o commit `493863e`.
+- **Commits adicionais:** `711fce2` (testes unitários do validador) e `27843e5` (workflow executa testes).
+- **CI do HEAD `27843e5`:** consulta inicial não retornou execução; **não afirmar testes aprovados nesse HEAD**.
+- **Auditoria inicial:** `package.json` e `src/app.vue` não encontrados na branch principal; não presumir aplicação pronta. Issues abertas: nenhuma retornada na busca.
+- **Próxima tarefa:** conferir execução dos novos testes no HEAD, corrigir falhas, completar inventário do repositório e preparar prova técnica da fundação.
