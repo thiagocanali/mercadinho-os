@@ -11,8 +11,8 @@
 | Prioridade | Tarefa | Estado | Dependência |
 |---|---|---|---|
 | P0 | Formalizar execução autônoma, limites e retomada | Validada | Arquivos e PR #1; CI no commit 493863e: sucesso |
-| P1 | Auditar árvore de código, scripts, dependências e CI | Em andamento | Inspeção inicial: package.json e src/app.vue ausentes; auditoria completa pendente |
-| P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Em andamento | Workflow documental passou em 493863e; testes de regressão adicionados, CI do novo HEAD pendente |
+| P1 | Auditar árvore de código, scripts, dependências e CI | Em andamento | Repositório documental; package.json criado para testes Node, Nuxt ainda não configurado |
+| P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Em andamento | CI documental aprovada em 0f45214; testes monetários adicionados, HEAD novo pendente |
 | P1 | Validar arquitetura Cloudflare + Neon + ORM com prova técnica | A validar | Escolha e limites dos serviços |
 | P1 | Levantar processos e equipamentos do mercadinho | Bloqueada externamente | Entrevista/visita |
 | P1 | Avaliar obrigações fiscais de SC | Bloqueada externamente | Especialista fiscal |
@@ -37,3 +37,10 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - **CI do HEAD `27843e5`:** consulta inicial não retornou execução; **não afirmar testes aprovados nesse HEAD**.
 - **Auditoria inicial:** `package.json` e `src/app.vue` não encontrados na branch principal; não presumir aplicação pronta. Issues abertas: nenhuma retornada na busca.
 - **Próxima tarefa:** conferir execução dos novos testes no HEAD, corrigir falhas, completar inventário do repositório e preparar prova técnica da fundação.
+
+## Execução adicional — domínio e CI
+- CI `43750381101` no HEAD `0f45214`: **success**.
+- Iniciado código de domínio em `src/domain/money.mjs`: centavos inteiros, multiplicação com BigInt e verificação de overflow; **não é PDV funcional**.
+- Adicionados testes Node em `tests/money.test.mjs` e `package.json` mínimo sem dependências de terceiros; CI passou a executar `npm test`.
+- **A VALIDAR:** política comercial de descontos, quantidades fracionárias/pesáveis, tributos e arredondamento. O módulo atual suporta apenas quantidades inteiras positivas.
+- **Próxima ação:** confirmar CI do novo HEAD, corrigir falhas e iniciar a prova técnica do scaffold Nuxt/Cloudflare/Neon sem provisionamento de produção.
