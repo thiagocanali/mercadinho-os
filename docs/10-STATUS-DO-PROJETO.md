@@ -12,7 +12,7 @@
 |---|---|---|---|
 | P0 | Formalizar execução autônoma, limites e retomada | Validada | Arquivos e PR #1; CI no commit 493863e: sucesso |
 | P1 | Auditar árvore de código, scripts, dependências e CI | Em andamento | Repositório documental; package.json criado para testes Node, Nuxt ainda não configurado |
-| P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Em andamento | CI documental aprovada em 0f45214; testes monetários adicionados, HEAD novo pendente |
+| P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Validada | GitHub Actions `43750516460`: sucesso com testes Python, validação documental e Node |
 | P1 | Validar arquitetura Cloudflare + Neon + ORM com prova técnica | A validar | Escolha e limites dos serviços |
 | P1 | Levantar processos e equipamentos do mercadinho | Bloqueada externamente | Entrevista/visita |
 | P1 | Avaliar obrigações fiscais de SC | Bloqueada externamente | Especialista fiscal |
@@ -44,3 +44,8 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Adicionados testes Node em `tests/money.test.mjs` e `package.json` mínimo sem dependências de terceiros; CI passou a executar `npm test`.
 - **A VALIDAR:** política comercial de descontos, quantidades fracionárias/pesáveis, tributos e arredondamento. O módulo atual suporta apenas quantidades inteiras positivas.
 - **Próxima ação:** confirmar CI do novo HEAD, corrigir falhas e iniciar a prova técnica do scaffold Nuxt/Cloudflare/Neon sem provisionamento de produção.
+
+## Validação da fundação — evidência
+- Workflow `43750516460` no commit `5d2d6aa`: **completed/success**; incluiu testes do validador, checagem documental e testes de domínio Node.
+- A implementação monetária é isolada e ainda não está integrada a Nuxt, banco ou PDV. Regras fiscais e produtos por peso continuam **A VALIDAR**.
+- Próxima prioridade: scaffold de aplicação, prova técnica Cloudflare/Neon e testes de autorização multiempresa, sem deploy de produção.
