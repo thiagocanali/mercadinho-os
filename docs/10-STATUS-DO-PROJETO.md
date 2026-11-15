@@ -80,6 +80,11 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Workflow #26 estava em execução na consulta inicial; conclusão não confirmada neste registro.
 - Migrations `0001_initial.sql` e `0002_stock_posting.sql` criadas: entidades multiempresa, integridade referencial, função transacional de estoque com idempotência.
 - Política RBAC pura e testes adicionados (`authorization.mjs`, `authorization.test.mjs`).
-- Smoke SQL em `tests/postgres_smoke.sql` e job CI com PostgreSQL 16 efêmero; **aguardando resultado**.
+- Smoke SQL em `tests/postgres_smoke.sql` e job CI com PostgreSQL 16 efêmero: **job postgres-smoke aprovado no workflow #38**.
 - Segurança: a função SQL não autentica o ator. NÃO expor execução a clientes; requer sessão verificada no servidor, privilégio mínimo e revisão de RLS.
 - Próximas cinco tarefas: (1) corrigir CI PostgreSQL e typecheck se falharem; (2) adicionar testes de concorrência SQL; (3) implementar sessão e autorização server-side; (4) testar RLS/grants de menor privilégio; (5) integrar serviço de estoque ao banco de desenvolvimento, sem deploy.
+
+## Verificação SQL — lote atual
+- Workflow #37 falhou no smoke PostgreSQL por fechamento incorreto do bloco `DO $$` em arquivo de testes; correção enviada no commit `c774809`.
+- Workflow #38: job `postgres-smoke` **success** em PostgreSQL 16 efêmero. Job de validação Nuxt ainda estava em execução na consulta; não declarar workflow integralmente aprovado antecipadamente.
+- Não há Neon provisionado, autenticação real, RLS nem deploy. Próximo foco: concorrência e segurança de execução SQL.
