@@ -1,5 +1,4 @@
 \set ON_ERROR_STOP on
-BEGIN;
 \ir ../database/migrations/0001_initial.sql
 \ir ../database/migrations/0002_stock_posting.sql
 
@@ -64,5 +63,4 @@ BEGIN
     RAISE EXCEPTION 'expected cross-tenant FK rejection';
   EXCEPTION WHEN foreign_key_violation THEN NULL;
   END;
-END $$;
-ROLLBACK;
+END $;
