@@ -13,11 +13,11 @@
 | P0 | Formalizar execução autônoma, limites e retomada | Validada | Arquivos e PR #1; CI no commit 493863e: sucesso |
 | P1 | Auditar árvore de código, scripts, dependências e CI | Em andamento | Repositório documental; package.json criado para testes Node, Nuxt ainda não configurado |
 | P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Validada | GitHub Actions `43750516460`: sucesso com testes Python, validação documental e Node |
-| P1 | Validar arquitetura Cloudflare + Neon + ORM com prova técnica | Em andamento | Scaffold Nuxt 4 criado; build e integração Cloudflare/Neon ainda não validados |
+| P1 | Validar arquitetura Cloudflare + Neon + ORM com prova técnica | Em andamento | Nuxt build validado no workflow #16; Cloudflare/Neon pendentes |
 | P1 | Levantar processos e equipamentos do mercadinho | Bloqueada externamente | Entrevista/visita |
 | P1 | Avaliar obrigações fiscais de SC | Bloqueada externamente | Especialista fiscal |
 | P2 | Definir escopo de MVP com critérios de aceite | A validar | Descoberta |
-| P2 | Implementar fundação multiempresa e autenticação | Planejada | MVP e arquitetura aprovados |
+| P2 | Implementar fundação multiempresa e autenticação | Em andamento | Guardas de domínio e testes adicionados; autenticação real ainda pendente |
 
 ## Regras de atualização
 Registrar para cada tarefa: data, branch, commit, testes realmente executados, CI, riscos, pendências e próxima ação. Não declarar fases concluídas por mera documentação. Consultar `05-ROADMAP.md`.
@@ -56,3 +56,10 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Workflow configurado para instalar dependências e executar `npm run build` em CI, sem deploy.
 - **Não validado:** instalação, build e compatibilidade Cloudflare/Neon; a página é apenas institucional, sem login, PDV ou armazenamento.
 - **Próxima ação:** confirmar GitHub Actions do HEAD, corrigir erros de instalação/build e definir adapter Cloudflare após prova técnica.
+
+## Retomada — CI Nuxt e guardas multiempresa
+- GitHub Actions `43750712456` no commit `a6384c9`: **success**; testes Python, Node e build Nuxt aprovados.
+- Implementado módulo de domínio `src/domain/tenant.mjs`, testes `tests/tenant.test.mjs` e documentação `docs/19-FUNDACAO-MULTITENANT.md`.
+- CI passa a executar `npm run typecheck` antes de `npm run build`. **Ainda sem evidência de aprovação do novo HEAD**.
+- **Limitação crítica:** guardas de domínio não são autenticação nem RLS; não disponibilizar endpoints multiempresa com dados reais.
+- Próxima tarefa: confirmar typecheck e testes no novo HEAD; corrigir falhas; avançar para persistência e autorização server-side em ambiente de desenvolvimento.
