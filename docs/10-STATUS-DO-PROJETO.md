@@ -1,22 +1,26 @@
-# 10 — Status do projeto
+# 10 — Status e fila de execução
 
-> **Classificações:** **DEFINIDO** = decisão explicitamente estabelecida; **PLANEJADO** = intenção ainda não implementada; **A VALIDAR** = depende de levantamento, prova técnica ou avaliação especializada.
-> **Estado:** documentação inicial, não constitui evidência de implementação.
+**Atualizado:** 2026-11-15. **DEFINIDO:** documentação e diretrizes. **PLANEJADO:** implementação do produto. **A VALIDAR:** necessidades do piloto, fiscal e compatibilidade da stack.
 
-**Marco documental:** 2026-11-15. Este arquivo registra apenas o estado conhecido pela documentação; não substitui auditoria do repositório.
+## Estado verificado
+- Documentação oficial existe no repositório.
+- Nenhuma funcionalidade de PDV, estoque ou autenticação foi comprovada implementada nesta revisão documental.
+- Branch de trabalho: `chore/agent-execution-workflow`.
 
-## Estado conhecido
-- **DEFINIDO:** propósito, primeiro piloto, abordagem cloud first, prioridade de custo baixo e documentação para Codex.
-- **PLANEJADO:** todas as funcionalidades de PDV, estoque, gestão, SaaS, offline e integração fiscal.
-- **A VALIDAR:** necessidades do piloto, hardware, periféricos, internet, emissão fiscal existente, ORM, auth, custos e escopo MVP.
-- **Implementação:** nenhuma funcionalidade foi verificada como pronta nesta etapa.
+## Fila priorizada
+| Prioridade | Tarefa | Estado | Dependência |
+|---|---|---|---|
+| P0 | Formalizar execução autônoma, limites e retomada | Em andamento | Nenhuma |
+| P1 | Auditar árvore de código, scripts, dependências e CI | Próxima | Acesso ao repositório |
+| P1 | Estabelecer CI mínimo de documentação/código conforme stack existente | Planejada | Auditoria |
+| P1 | Validar arquitetura Cloudflare + Neon + ORM com prova técnica | A validar | Escolha e limites dos serviços |
+| P1 | Levantar processos e equipamentos do mercadinho | Bloqueada externamente | Entrevista/visita |
+| P1 | Avaliar obrigações fiscais de SC | Bloqueada externamente | Especialista fiscal |
+| P2 | Definir escopo de MVP com critérios de aceite | A validar | Descoberta |
+| P2 | Implementar fundação multiempresa e autenticação | Planejada | MVP e arquitetura aprovados |
 
-## Próximas tarefas
-1. Entrevistar responsável do estabelecimento e observar venda/estoque/caixa.
-2. Inventariar hardware, internet, leitor, impressora e sistema fiscal.
-3. Consultar contador/especialista fiscal sobre requisitos de Santa Catarina.
-4. Definir backlog e critérios do MVP.
-5. Validar arquitetura e limites de custo em prova técnica.
+## Regras de atualização
+Registrar para cada tarefa: data, branch, commit, testes realmente executados, CI, riscos, pendências e próxima ação. Não declarar fases concluídas por mera documentação. Consultar `05-ROADMAP.md`.
 
-## Como atualizar
-Para cada entrega: data, branch/PR, mudança, testes, evidência, pendências e decisão. Não marcar concluído por mera intenção. Ver `05-ROADMAP.md`.
+## Riscos
+Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, custos de provedores e conectividade do piloto.
