@@ -59,6 +59,9 @@ BEGIN
   IF p_direction = 'in' AND v_balance > 9223372036854775807 - p_quantity THEN
     RAISE EXCEPTION 'stock overflow';
   END IF;
+  IF EXISTS (SELECT 1 FROM stock_balances WHERE tenant_id = p_tenant_id AND product_id = p_product_id AND version = 9223372036854775807) THEN
+    RAISE EXCEPTION 'stock version overflow';
+  END IF;
   UPDATE stock_balances SET
     quantity = CASE WHEN p_direction = 'in' THEN v_balance + p_quantity ELSE v_balance - p_quantity END,
     version = version + 1
