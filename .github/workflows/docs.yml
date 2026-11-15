@@ -8,6 +8,8 @@ on:
       - 'tests/test_check_docs.py'
       - 'tests/*.test.mjs'
       - 'src/domain/**'
+      - 'database/migrations/**'
+      - 'tsconfig.json'
       - 'package.json'
       - 'nuxt.config.ts'
       - 'app/**'
