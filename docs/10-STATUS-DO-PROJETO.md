@@ -109,3 +109,6 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Workflow de push em `main` ampliado para código, testes e migrations. Sem deploy.
 - **Pendente:** CI do HEAD, provedor real de autenticação, implementação concreta dos adaptadores de sessão/associação, privilégios SQL mínimos, RLS e testes ponta a ponta.
 - **Próximas 5 tarefas:** (1) confirmar CI do HEAD e corrigir falhas; (2) adicionar adapter de associação com consulta parametrizada; (3) implementar e testar autenticação criptográfica server-side; (4) aplicar política RLS com testes de isolamento; (5) expor API autenticada de estoque apenas após revisão de permissões.
+
+- Complemento: `src/server/postgres-membership-adapter.mjs` consulta associação por `tenant_id` e `user_id` usando parâmetros SQL e rejeita respostas inconsistentes; testes Node adicionados. **Ainda sem autenticação real ou permissões DB de produção.**
+- CI #54 para HEAD anterior `47533f4`: em execução na consulta. O commit mais recente do adaptador de associação aguarda CI.
