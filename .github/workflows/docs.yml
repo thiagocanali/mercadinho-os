@@ -8,6 +8,7 @@ on:
       - 'tests/test_check_docs.py'
       - 'tests/*.test.mjs'
       - 'tests/*.sql'
+      - 'tests/*.sh'
       - 'src/domain/**'
       - 'database/migrations/**'
       - 'tsconfig.json'
@@ -75,4 +76,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Test PostgreSQL migrations and stock posting
-        run: psql -h localhost -U test -d mercadinho_test -v ON_ERROR_STOP=1 -f tests/postgres_smoke.sql
+        run: |
+          psql -h localhost -U test -d mercadinho_test -v ON_ERROR_STOP=1 -f tests/postgres_smoke.sql
+          psql -h localhost -U test -d mercadinho_test -v ON_ERROR_STOP=1 -f tests/postgres_security.sql
+      - name: Test concurrent stock movements
+        run: bash tests/postgres_concurrency.sh
