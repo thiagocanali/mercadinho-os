@@ -15,6 +15,9 @@ export function createPostgresStockAdapter(client) {
         throw new Error('unexpected stock posting result');
       }
       const row = result.rows[0];
+      if (typeof row.movement_id !== 'string' || !row.movement_id.trim() || typeof row.replayed !== 'boolean') {
+        throw new Error('invalid stock posting metadata');
+      }
       const amount = typeof row.resulting_quantity === 'bigint'
         ? row.resulting_quantity
         : BigInt(row.resulting_quantity);
