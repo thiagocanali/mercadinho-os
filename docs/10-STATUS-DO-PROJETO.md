@@ -96,3 +96,8 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - `src/server/stock-service.mjs`: contrato server-only que exige contexto de sessão verificado, RBAC e evita confiar em tenant/usuário enviados pelo cliente; testes adicionados. **Não é um endpoint nem autenticação funcional.**
 - **Pendências:** CI do novo HEAD, revisão de segurança de grants/RLS, testes de replay concorrente, adapter Postgres parametrizado, autenticação real e integração Nuxt.
 - **Próximas 5 tarefas:** (1) validar/corrigir CI PostgreSQL; (2) endurecer RLS e grants; (3) criar adapter parametrizado; (4) adicionar testes concorrentes de replay e saldo insuficiente; (5) implementar autenticação server-side com testes.
+
+## Complemento do lote — replay concorrente
+- CI #46: job PostgreSQL **success** (ACL e 20 entradas paralelas), testes Node e typecheck Nuxt **success**; build e conclusão global ainda em execução na última consulta.
+- Teste de replay simultâneo com 10 requisições de mesma chave acrescentado em `tests/postgres_concurrency.sh`; **CI do novo HEAD pendente**.
+- Próxima ação imediata: validar replay simultâneo na CI e corrigir eventual corrida. Depois, implementar adapter SQL e sessão real.
