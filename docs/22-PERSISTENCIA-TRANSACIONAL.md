@@ -24,3 +24,9 @@
 3. Serviço autenticado com identidade verificada e queries parametrizadas.
 4. Revisão de RLS, grants e credenciais de menor privilégio.
 5. Política de unidades fracionárias e auditoria fiscal.
+
+## Validação adicional — 2026-11-16
+- Migration `0003_lockdown.sql` revoga `EXECUTE` de `PUBLIC` na função de lançamento.
+- CI #46: job `postgres-smoke` **success**, incluindo teste de ACL e 20 movimentos simultâneos sobre um mesmo produto.
+- O teste de concorrência cobre entradas distintas; replay simultâneo, disputas de saída, RLS e papéis restritos permanecem pendentes.
+- O serviço `src/server/stock-service.mjs` ainda é somente um contrato de segurança sem adaptador SQL, sem autenticação real e sem endpoint.
