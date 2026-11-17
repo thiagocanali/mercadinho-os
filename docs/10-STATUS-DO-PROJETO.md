@@ -101,3 +101,11 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - CI #46: job PostgreSQL **success** (ACL e 20 entradas paralelas), testes Node e typecheck Nuxt **success**; build e conclusão global ainda em execução na última consulta.
 - Teste de replay simultâneo com 10 requisições de mesma chave acrescentado em `tests/postgres_concurrency.sh`; **CI do novo HEAD pendente**.
 - Próxima ação imediata: validar replay simultâneo na CI e corrigir eventual corrida. Depois, implementar adapter SQL e sessão real.
+
+## Lote de continuidade — 2026-11-16 (adapter e contexto)
+- Workflow #49 no commit `5ba90ca`: **completed/success**, incluindo smoke PostgreSQL e replay concorrente.
+- `src/server/postgres-stock-adapter.mjs`: adaptador com parâmetros SQL `$1..$6`, validação de retorno e testes unitários. Não cria conexão nem expõe endpoint.
+- `src/server/verified-context.mjs`: composição de contexto usando resolvedor de sessão e repositório de associação fornecidos pelo servidor, com testes de negação por padrão.
+- Workflow de push em `main` ampliado para código, testes e migrations. Sem deploy.
+- **Pendente:** CI do HEAD, provedor real de autenticação, implementação concreta dos adaptadores de sessão/associação, privilégios SQL mínimos, RLS e testes ponta a ponta.
+- **Próximas 5 tarefas:** (1) confirmar CI do HEAD e corrigir falhas; (2) adicionar adapter de associação com consulta parametrizada; (3) implementar e testar autenticação criptográfica server-side; (4) aplicar política RLS com testes de isolamento; (5) expor API autenticada de estoque apenas após revisão de permissões.
