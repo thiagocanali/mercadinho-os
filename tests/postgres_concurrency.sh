@@ -8,7 +8,7 @@ psql -v ON_ERROR_STOP=1 -f database/migrations/0002_stock_posting.sql >/dev/null
 psql -v ON_ERROR_STOP=1 -f database/migrations/0003_lockdown.sql >/dev/null
 tenant=$(psql -Atqc "INSERT INTO tenants(name) VALUES ('Concurrent shop') RETURNING id")
 actor=$(psql -Atqc "INSERT INTO app_users(external_auth_id) VALUES ('concurrency-test') RETURNING id")
-psql -v ON_ERROR_STOP=1 -v t="$tenant" -v u="$actor" -qc "INSERT INTO tenant_memberships(tenant_id,user_id,role) VALUES (:'t',:'u','manager')" >/dev/null
+psql -v ON_ERROR_STOP=1 -qc "INSERT INTO tenant_memberships(tenant_id,user_id,role) VALUES ('$tenant','$actor','manager')" >/dev/null
 product=$(psql -Atqc "INSERT INTO products(tenant_id,sku,name,unit_price_centavos) VALUES ('$tenant','SKU','Product',100) RETURNING id")
 psql -Atqc "SELECT * FROM post_stock_movement('$tenant','$product','$actor','seed','in',10)" >/dev/null
 # 20 concurrent requests with distinct keys; each adds one unit.
