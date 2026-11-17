@@ -88,3 +88,11 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Workflow #37 falhou no smoke PostgreSQL por fechamento incorreto do bloco `DO $$` em arquivo de testes; correção enviada no commit `c774809`.
 - Workflow #38: job `postgres-smoke` **success** em PostgreSQL 16 efêmero. Job de validação Nuxt ainda estava em execução na consulta; não declarar workflow integralmente aprovado antecipadamente.
 - Não há Neon provisionado, autenticação real, RLS nem deploy. Próximo foco: concorrência e segurança de execução SQL.
+
+## Ciclo de segurança e concorrência — 2026-11-16
+- CI #40 (`43751598930`) do commit `ac31eb4`: **completed/success**.
+- Migration `0003_lockdown.sql`: revoga execução da função de estoque do papel PUBLIC, exigindo grants explícitos em futura integração.
+- Testes `postgres_security.sql` e `postgres_concurrency.sh`: verificação de ACL e 20 lançamentos paralelos em PostgreSQL efêmero, aguardando CI do novo HEAD.
+- `src/server/stock-service.mjs`: contrato server-only que exige contexto de sessão verificado, RBAC e evita confiar em tenant/usuário enviados pelo cliente; testes adicionados. **Não é um endpoint nem autenticação funcional.**
+- **Pendências:** CI do novo HEAD, revisão de segurança de grants/RLS, testes de replay concorrente, adapter Postgres parametrizado, autenticação real e integração Nuxt.
+- **Próximas 5 tarefas:** (1) validar/corrigir CI PostgreSQL; (2) endurecer RLS e grants; (3) criar adapter parametrizado; (4) adicionar testes concorrentes de replay e saldo insuficiente; (5) implementar autenticação server-side com testes.
