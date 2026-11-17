@@ -24,6 +24,13 @@ on:
     paths:
       - '**/*.md'
       - 'scripts/check_docs.py'
+      - 'tests/**'
+      - 'src/**'
+      - 'database/migrations/**'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'nuxt.config.ts'
+      - 'app/**'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
