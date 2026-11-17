@@ -5,7 +5,7 @@
 
 DO $$
 BEGIN
-  IF has_function_privilege('public', 'post_stock_movement(uuid,uuid,uuid,text,text,bigint)', 'EXECUTE') THEN
+  IF EXISTS (SELECT 1 FROM pg_proc p, LATERAL aclexplode(coalesce(p.proacl, acldefault('f', p.proowner))) a WHERE p.oid = 'post_stock_movement(uuid,uuid,uuid,text,text,bigint)'::regprocedure AND a.grantee = 0 AND a.privilege_type = 'EXECUTE') THEN
     RAISE EXCEPTION 'PUBLIC can execute stock posting';
   END IF;
   IF NOT EXISTS (
