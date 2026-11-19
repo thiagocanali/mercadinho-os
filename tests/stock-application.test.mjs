@@ -39,3 +39,38 @@ test('rejects cashier and rolls back', async () => {
   assert.ok(!db.queries.some(q => q.sql.includes('FROM post_stock_movement')));
   assert.equal(db.released,true);
 });
+
+test('rejects cross-tenant membership and never posts movement', async () => {
+  const db = setup();
+  const originalConnect = db.pool.connect;
+  db.pool.connect = async () => {
+    const client = await originalConnect();
+    const query = client.query;
+    client.query = async (sql, params) => sql.includes('FROM tenant_memberships')
+      ? { rows: [{ tenant_id: '99999999-9999-4999-8999-999999999999', user_id: userId, role: 'owner' }] }
+      : query(sql, params);
+    return client;
+  };
+  await assert.rejects(executeStockMovement({
+    pool: db.pool, resolveSession: async () => ({ verified: true, userId }),
+  }, {}, tenantId, input), /invalid membership|membership required/);
+  assert.ok(db.queries.some(q => q.sql === 'ROLLBACK'));
+  assert.ok(!db.queries.some(q => q.sql.includes('FROM post_stock_movement')));
+  assert.equal(db.released, true);
+});
+test('rejects invalid quantity without posting stock', async () => {
+  const db = setup();
+  await assert.rejects(executeStockMovement({
+    pool: db.pool, resolveSession: async () => ({ verified: true, userId }),
+  }, {}, tenantId, { ...input, quantity: -1 }));
+  assert.ok(db.queries.some(q => q.sql === 'ROLLBACK'));
+  assert.ok(!db.queries.some(q => q.sql.includes('FROM post_stock_movement')));
+});
+test('rejects failed session resolution before connecting', async () => {
+  let connected = false;
+  await assert.rejects(executeStockMovement({
+    pool: { connect: async () => { connected = true; } },
+    resolveSession: async () => { throw new Error('invalid signature'); },
+  }, {}, tenantId, input), /invalid signature/);
+  assert.equal(connected, false);
+});
