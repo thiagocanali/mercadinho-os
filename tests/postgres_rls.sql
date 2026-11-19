@@ -16,7 +16,7 @@ INSERT INTO products(tenant_id,id,sku,name,unit_price_centavos) VALUES
 -- A non-owner role cannot bypass FORCE RLS.
 CREATE ROLE mercadinho_rls_test NOLOGIN;
 GRANT USAGE ON SCHEMA public TO mercadinho_rls_test;
-GRANT SELECT ON products TO mercadinho_rls_test;
+GRANT SELECT, INSERT ON products TO mercadinho_rls_test;
 SET ROLE mercadinho_rls_test;
 DO $$
 BEGIN
@@ -33,6 +33,15 @@ BEGIN
     RAISE EXCEPTION 'RLS tenant one isolation failed';
   END IF;
 END $$;
+DO $
+BEGIN
+  BEGIN
+    INSERT INTO products(tenant_id,id,sku,name,unit_price_centavos)
+      VALUES ('22222222-2222-4222-8222-222222222222', gen_random_uuid(), 'attack', 'Cross tenant', 1);
+    RAISE EXCEPTION 'expected cross-tenant insert rejection';
+  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  END;
+END $;
 COMMIT;
 BEGIN;
 SELECT set_config('app.tenant_id','22222222-2222-4222-8222-222222222222',true);
@@ -45,6 +54,6 @@ BEGIN
 END $$;
 COMMIT;
 RESET ROLE;
-REVOKE SELECT ON products FROM mercadinho_rls_test;
+REVOKE SELECT, INSERT ON products FROM mercadinho_rls_test;
 REVOKE USAGE ON SCHEMA public FROM mercadinho_rls_test;
 DROP ROLE mercadinho_rls_test;
