@@ -41,6 +41,18 @@ class WorkflowPolicyTests(unittest.TestCase):
             with self.subTest(fragment=fragment):
                 self.assertIn(fragment, self.workflow)
 
+    def test_ci_does_not_deploy_or_request_secrets(self):
+        forbidden = (
+            "vercel deploy", "wrangler deploy", "deployments: write",
+            "id-token: write", "secrets.", "NEON_DATABASE_URL",
+        )
+        for fragment in forbidden:
+            with self.subTest(fragment=fragment):
+                self.assertNotIn(fragment, self.workflow)
+
+    def test_workflow_has_bounded_jobs(self):
+        self.assertGreaterEqual(self.workflow.count("timeout-minutes: 15"), 2)
+
     def test_agents_require_pr_reuse_and_no_bypass(self):
         for phrase in (
             "5 a 10 tarefas", "PR existente", "Nunca desabilitar",
