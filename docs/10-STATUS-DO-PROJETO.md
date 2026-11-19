@@ -170,3 +170,10 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Alterações commitadas na branch da PR #2. Sem alteração de produção.
 - A consulta de workflows associada ao HEAD anterior continuou sem resultados; **a CI nova ainda precisa de validação real**.
 - Próximas cinco tarefas: (1) confirmar workflow na PR #2; (2) corrigir qualquer falha Node/PostgreSQL; (3) revisar role backend e grants; (4) integrar emissor confiável com revogação; (5) criar API autenticada e proteções HTTP.
+
+## Revisão de validação de entradas — 2026-11-19
+- `src/server/stock-service.mjs` valida `productId` como UUID PostgreSQL e exige chave de idempotência sem espaços nas extremidades. Entradas inválidas são rejeitadas antes da chamada ao adaptador SQL.
+- Fixtures de `tests/stock-service.test.mjs` migradas para UUID válido; novos cenários rejeitam produto inválido e chave não canônica.
+- Teste JWT ajustado para adulteração determinística.
+- **CI continua sem runs/status retornados pelo conector para HEAD consultado**; não presumir sucesso. PR #2 segue rascunho, sem merge nem deploy.
+- Próximas tarefas: (1) executar Actions e analisar logs; (2) testar role SQL restrita no PostgreSQL 16; (3) selecionar emissor confiável com revogação; (4) adicionar endpoint autenticado após threat review; (5) implementar testes ponta a ponta em ambiente isolado.
