@@ -186,3 +186,10 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Não foram modificados branch protection, rulesets, reviewers, deploys ou configurações Vercel.
 - **Pendente:** confirmar nomes dos checks exigidos e as regras reais da `main`; o conector disponível não oferece leitura direta dessas proteções. A consulta de runs do HEAD não prova ausência de Actions porque filtra execuções por evento PR.
 - **Bloqueio de integração:** PR #2 contém mudanças de autenticação e banco, exige CI verificável e revisão adicional; não marcar pronta ou mesclar até validação.
+
+## Continuidade da auditoria de CI — 2026-11-19
+- Implementado `tests/test_workflow_policy.py` (descoberto pelo `python -m unittest discover`) para garantir checks em toda PR, push somente na `main`, cancelamento apenas de PR, permissões mínimas e presença dos jobs/testes críticos.
+- Criado `docs/24-AUDITORIA-GITHUB-CI.md` com checklist para rulesets, branch protection, checks obrigatórios, diagnóstico de Actions e custos de CI/Vercel.
+- O repositório **não possui `package-lock.json`** no branch auditado; o workflow usa `npm install`. Para builds reprodutíveis, gerar lockfile válido e trocar para `npm ci` em lote posterior, após testar a instalação.
+- Consulta de runs do HEAD anterior retornou vazio; a API do conector cobre apenas runs de PR, portanto o resultado **não comprova** ausência de CI.
+- **Pendente:** obter logs e checks reais, validar a nova suíte, ler regras efetivas da `main` com permissão adequada, revisar alterações de autenticação/banco antes de merge. PR #2 segue rascunho.
