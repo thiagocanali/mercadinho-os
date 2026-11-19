@@ -1,0 +1,91 @@
+name: Documentation validation
+
+on:
+  pull_request:
+    paths:
+      - '**/*.md'
+      - 'scripts/check_docs.py'
+      - 'tests/test_check_docs.py'
+      - 'tests/*.test.mjs'
+      - 'tests/*.sql'
+      - 'tests/*.sh'
+      - 'src/domain/**'
+      - 'src/server/**'
+      - 'database/migrations/**'
+      - 'tsconfig.json'
+      - 'package.json'
+      - 'nuxt.config.ts'
+      - 'app/**'
+      - '.gitignore'
+      - '.env.example'
+      - '.github/workflows/docs.yml'
+  push:
+    branches: [main]
+    paths:
+      - '**/*.md'
+      - 'scripts/check_docs.py'
+      - 'tests/**'
+      - 'src/**'
+      - 'database/migrations/**'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'nuxt.config.ts'
+      - 'app/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test documentation validator
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Check documentation
+        run: python scripts/check_docs.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.21.1'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Test domain logic
+        run: npm test
+      - name: Typecheck Nuxt
+        run: npm run typecheck
+      - name: Build Nuxt
+        run: npm run build
+
+  postgres-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: mercadinho_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test -d mercadinho_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGPASSWORD: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test PostgreSQL migrations and stock posting
+        run: |
+          psql -h localhost -U test -d mercadinho_test -v ON_ERROR_STOP=1 -f tests/postgres_smoke.sql
+          psql -h localhost -U test -d mercadinho_test -v ON_ERROR_STOP=1 -f tests/postgres_security.sql
+      - name: Test concurrent stock movements
+        run: bash tests/postgres_concurrency.sh

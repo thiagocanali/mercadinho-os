@@ -1,27 +1,30 @@
 # Instruções permanentes para agentes — Mercadinho OS
 
-> **Classificações:** **DEFINIDO** = decisão explicitamente estabelecida; **PLANEJADO** = intenção ainda não implementada; **A VALIDAR** = depende de levantamento, prova técnica ou avaliação especializada.
-> **Estado:** documentação inicial, não constitui evidência de implementação.
+> **DEFINIDO**: decisão estabelecida. **PLANEJADO**: intenção ainda não implementada. **A VALIDAR**: depende de confirmação técnica, operacional ou legal.
 
-## Ordem obrigatória de leitura
-1. Ler `PROJECT-CONTEXT.md`, `README.md` e `CODEX-WORKFLOW.md`.
-2. Consultar os documentos de `docs/` relevantes à tarefa.
-3. Inspecionar o código e o histórico antes de afirmar que algo existe.
+## Leitura obrigatória
+1. Ler `PROJECT-CONTEXT.md`, `README.md`, `CODEX-WORKFLOW.md`.
+2. Consultar documentação pertinente em `docs/` e verificar o estado real do código, branches e CI.
+3. Consultar a fila de execução em `docs/10-STATUS-DO-PROJETO.md`.
 
-## Regras inegociáveis
-- Não inventar requisitos do cliente piloto; classificar como DEFINIDO, PLANEJADO ou A VALIDAR.
-- Não alterar arquitetura, banco ou contratos silenciosamente; documentar impactos e ADRs em `docs/09-DECISOES-TECNICAS.md`.
-- Não adicionar serviços pagos, alterar produção ou executar operações destrutivas sem autorização explícita.
-- Nunca publicar segredos, tokens, credenciais, dados pessoais ou senhas em texto puro; usar secret managers e hash seguro para senhas.
-- Autorizar toda operação no servidor; jamais confiar apenas no frontend.
-- Garantir isolamento multiempresa em consultas, gravações, arquivos, filas e relatórios; testar acessos cruzados.
-- Escrever testes proporcionais ao risco, especialmente para vendas, caixa, estoque, pagamentos e sincronização.
-- Fazer migrations reversíveis e revisadas; não apagar dados em produção.
-- Não declarar funcionalidade pronta sem código, testes e evidência.
-- Não implementar emissão fiscal própria sem validação jurídica, contábil e técnica de Santa Catarina.
-- Atualizar contexto, status e documentação após mudanças relevantes; manter código modular, simples e sustentável.
-- Evitar dependências desnecessárias e custos recorrentes não aprovados.
-- Evitar deploys intermediários: priorizar testes locais/CI, agrupar mudanças e respeitar cotas gratuitas.
+## Execução autônoma
+- Identificar a próxima tarefa segura e executável, implementar, testar, corrigir, fazer commit e push na branch adequada, verificar CI e atualizar a fila.
+- Não solicitar confirmação para decisões técnicas rotineiras dentro do escopo já autorizado.
+- Não afirmar continuidade em segundo plano: executar durante a sessão ativa e registrar o ponto de retomada.
+- Priorizar problemas de segurança, integridade de dados e regressões antes de melhorias cosméticas.
+- Manter mudanças pequenas e coesas, com testes proporcionais ao risco.
+- Se uma tarefa depender de terceiros, registrar o bloqueio e avançar em outra tarefa independente.
 
-## Entrega de cada tarefa
-Relatar escopo, arquivos modificados, testes executados, resultados, riscos, pendências e necessidade de decisão. Seguir `CODEX-WORKFLOW.md`.
+## Restrições inegociáveis
+- Não inventar requisitos do piloto nem declarar funcionalidades prontas sem evidência.
+- Não alterar arquitetura silenciosamente: registrar ADR em `docs/09-DECISOES-TECNICAS.md`.
+- Não adicionar serviços pagos, executar operações destrutivas, fazer merge ou deploy em produção sem autorização aplicável.
+- Nunca publicar credenciais, dados pessoais ou senhas em texto puro.
+- Validar permissões no servidor e garantir isolamento entre estabelecimentos.
+- Revisar migrações e impacto sobre dados antes de aplicá-las.
+- Não implementar emissão fiscal sem validação legal, contábil e técnica em Santa Catarina.
+- Priorizar lint, typecheck, testes e build locais/CI; agrupar alterações para evitar previews e deploys desnecessários.
+- Não repetir deploy quando a cota gratuita estiver esgotada.
+
+## Relato e rastreabilidade
+Atualizar `PROJECT-CONTEXT.md`, `docs/10-STATUS-DO-PROJETO.md` e documentação relacionada. Informar alterações, commit, testes realmente executados, falhas, riscos e próximo passo.
