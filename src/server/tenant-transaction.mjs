@@ -1,5 +1,7 @@
 import { assertTenantId } from '../domain/tenant.mjs';
 
+const POSTGRES_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 /**
  * A dedicated connection from a trusted backend pool is required.
  * The tenant setting is LOCAL to the transaction, never session-global.
@@ -8,6 +10,7 @@ import { assertTenantId } from '../domain/tenant.mjs';
  */
 export async function withTenantTransaction(pool, tenantId, operation) {
   assertTenantId(tenantId);
+  if (!POSTGRES_UUID.test(tenantId)) throw new TypeError('PostgreSQL tenantId must be a UUID');
   if (typeof pool?.connect !== 'function' || typeof operation !== 'function') {
     throw new TypeError('pool.connect and operation callback required');
   }
