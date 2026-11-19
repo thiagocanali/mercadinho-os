@@ -7,6 +7,18 @@
 2. Consultar documentação pertinente em `docs/` e verificar o estado real do código, branches e CI.
 3. Consultar a fila de execução em `docs/10-STATUS-DO-PROJETO.md`.
 
+## Desenvolvimento autônomo com proteção — política permanente
+- Trabalhar em lotes de **5 a 10 tarefas relacionadas**, com critérios de aceite, riscos e testes definidos antes das alterações.
+- Antes de abrir uma PR, consultar PRs abertas e **atualizar a PR existente da mesma frente**; manter no máximo uma PR ativa por frente, salvo justificativa técnica documentada.
+- Fazer commits pequenos e rastreáveis dentro do lote; executar testes aplicáveis, corrigir falhas de CI e atualizar a mesma PR.
+- Não abrir PR por tarefa, não fazer push direto na branch protegida e não usar force-push para contornar revisões.
+- Priorizar squash merge e auto-merge **somente** quando permitidos, autorizados, com PR pronta, revisões obrigatórias e checks aprovados. Não mesclar rascunhos ou mudanças inseguras.
+- Alterações em autenticação, permissões, banco, migrations e produção exigem revisão de segurança, testes adicionais e validação de impacto antes de merge ou aplicação.
+- Nunca desabilitar, reduzir ou contornar branch protection, rulesets, checks obrigatórios ou revisões. Inspecionar as regras existentes antes de sugerir modificações.
+- Evitar deploys de preview em commits intermediários; preferir GitHub Actions e testes locais, respeitando a cota gratuita da Vercel.
+- Se CI estiver ausente, sem status ou não verificável, registrar o bloqueio; **não** interpretar ausência de resultado como sucesso.
+- Continuar tarefas independentes durante a sessão ativa sem aguardar aprovação a cada etapa; não prometer trabalho em segundo plano.
+
 ## Execução autônoma
 - Identificar a próxima tarefa segura e executável, implementar, testar, corrigir, fazer commit e push na branch adequada, verificar CI e atualizar a fila.
 - Não solicitar confirmação para decisões técnicas rotineiras dentro do escopo já autorizado.
