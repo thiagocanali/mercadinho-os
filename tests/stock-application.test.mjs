@@ -92,7 +92,8 @@ test('accepts cryptographically verified bearer token and rejects altered signat
   assert.equal(result.resultingQuantity, 2);
   assert.equal(db.released, true);
   let connected = false;
-  const badToken = token.slice(0,-1)+(token.endsWith('A')?'B':'A');
+  const signature = token.split('.')[2];
+  const badToken = encoded + '.' + (signature.startsWith('A') ? 'B' : 'A') + signature.slice(1);
   await assert.rejects(executeStockMovement({
     pool: {connect: async () => { connected = true; }},
     resolveSession,
