@@ -45,4 +45,6 @@ BEGIN
 END $$;
 COMMIT;
 RESET ROLE;
+REVOKE SELECT ON products FROM mercadinho_rls_test;
+REVOKE USAGE ON SCHEMA public FROM mercadinho_rls_test;
 DROP ROLE mercadinho_rls_test;
