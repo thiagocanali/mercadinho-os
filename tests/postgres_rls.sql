@@ -33,7 +33,7 @@ BEGIN
     RAISE EXCEPTION 'RLS tenant one isolation failed';
   END IF;
 END $$;
-DO $
+DO $$
 BEGIN
   BEGIN
     INSERT INTO products(tenant_id,id,sku,name,unit_price_centavos)
@@ -41,7 +41,7 @@ BEGIN
     RAISE EXCEPTION 'expected cross-tenant insert rejection';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
-END $;
+END $$;
 COMMIT;
 BEGIN;
 SELECT set_config('app.tenant_id','22222222-2222-4222-8222-222222222222',true);
