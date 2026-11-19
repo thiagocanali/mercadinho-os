@@ -26,7 +26,7 @@ test('rejects unsigned, wrong key, wrong algorithm and tampering', async () => {
 });
 test('rejects wrong issuer, audience, expiry and future issuance', async () => {
   const resolve = createHmacSessionResolver(config);
-  for (const altered of [{iss:'other'},{aud:'other'},{exp:1800000000},{iat:1800000001},{nbf:1800000001},{exp:1800004000}]) {
+  for (const altered of [{iss:'other'},{aud:'other'},{exp:1800000000},{iat:1800000001},{nbf:1800000001},{exp:1800004000},{iat:1800000050,exp:1800000020}]) {
     await assert.rejects(resolve(req(sign({...claims,...altered}))));
   }
 });
@@ -47,4 +47,9 @@ test('rejects malformed token, unexpected headers and invalid claims', async () 
   ]) {
     await assert.rejects(resolve(req(token)));
   }
+});
+
+test('rejects JWT with an array header', async () => {
+  const resolve = createHmacSessionResolver(config);
+  await assert.rejects(resolve(req(sign(claims, ['HS256']))));
 });
