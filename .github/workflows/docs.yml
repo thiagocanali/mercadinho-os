@@ -91,3 +91,5 @@ jobs:
         run: bash tests/postgres_concurrency.sh
       - name: Test tenant row-level security
         run: psql -h localhost -U test -d mercadinho_test -v ON_ERROR_STOP=1 -f tests/postgres_rls.sql
+      - name: Test restricted backend role stock posting
+        run: psql -h localhost -U test -d mercadinho_test -v ON_ERROR_STOP=1 -f tests/postgres_restricted_role.sql
