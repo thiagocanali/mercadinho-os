@@ -177,3 +177,12 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Teste JWT ajustado para adulteração determinística.
 - **CI continua sem runs/status retornados pelo conector para HEAD consultado**; não presumir sucesso. PR #2 segue rascunho, sem merge nem deploy.
 - Próximas tarefas: (1) executar Actions e analisar logs; (2) testar role SQL restrita no PostgreSQL 16; (3) selecionar emissor confiável com revogação; (4) adicionar endpoint autenticado após threat review; (5) implementar testes ponta a ponta em ambiente isolado.
+
+## Auditoria GitHub/CI e política de autonomia — 2026-11-19
+- Encontrada uma PR aberta da frente (`#2`), mantida como rascunho. Não criar PR duplicada.
+- `AGENTS.md` e `CODEX-WORKFLOW.md` atualizados para lotes de 5–10 tarefas, commits coesos, reutilização de PR, squash/auto-merge condicionado a autorização, CI e revisões.
+- Workflow `.github/workflows/docs.yml`: executa em **toda PR** (sem filtro de paths), push na `main` e disparo manual; cancela runs de PR obsoletos por concorrência e mantém validações de `main` sem cancelamento.
+- O filtro de paths anterior poderia deixar checks obrigatórios pendentes em PRs que não correspondessem aos caminhos.
+- Não foram modificados branch protection, rulesets, reviewers, deploys ou configurações Vercel.
+- **Pendente:** confirmar nomes dos checks exigidos e as regras reais da `main`; o conector disponível não oferece leitura direta dessas proteções. A consulta de runs do HEAD não prova ausência de Actions porque filtra execuções por evento PR.
+- **Bloqueio de integração:** PR #2 contém mudanças de autenticação e banco, exige CI verificável e revisão adicional; não marcar pronta ou mesclar até validação.
