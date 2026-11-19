@@ -112,3 +112,12 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 
 - Complemento: `src/server/postgres-membership-adapter.mjs` consulta associação por `tenant_id` e `user_id` usando parâmetros SQL e rejeita respostas inconsistentes; testes Node adicionados. **Ainda sem autenticação real ou permissões DB de produção.**
 - CI #54 para HEAD anterior `47533f4`: em execução na consulta. O commit mais recente do adaptador de associação aguarda CI.
+
+## Lote de continuidade — 2026-11-19 (RLS e transações)
+- CI #56 no commit `aeb9497`: **completed/success**.
+- Migration `0004_tenant_rls.sql`: habilita e força RLS em associações, produtos, saldos e movimentos; política por `app.tenant_id`.
+- `tests/postgres_rls.sql`: valida negação sem contexto e leitura isolada para duas empresas em role não proprietária. CI executa após os testes de concorrência.
+- `src/server/tenant-transaction.mjs`: contexto tenant configurado por `set_config(..., true)` em conexão dedicada e transação, com rollback/release e testes.
+- **Limitação de segurança:** a variável PostgreSQL `app.tenant_id` é modificável por clientes SQL; RLS não autentica o usuário. Somente backend confiável pode conectar. Grants para role restrita, provedor real de sessão e integração de endpoints permanecem pendentes.
+- **CI do HEAD atual:** ainda não confirmada; testes SQL novos dependem de GitHub Actions.
+- **Próximas cinco tarefas:** (1) validar e corrigir CI RLS; (2) testar escrita cross-tenant e grants mínimos; (3) conectar autenticação real server-side; (4) implementar integração transacional entre adapters e banco; (5) criar endpoints de produtos/estoque apenas com autorização verificada.
