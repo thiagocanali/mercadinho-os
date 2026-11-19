@@ -20,7 +20,7 @@ on:
       - '.env.example'
       - '.github/workflows/docs.yml'
   push:
-    branches: [main]
+    branches: [main, chore/agent-execution-workflow]
     paths:
       - '**/*.md'
       - 'scripts/check_docs.py'
