@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { executeStockMovement } from '../src/server/stock-application.mjs';
+import { createHmacSessionResolver } from '../src/server/hmac-session.mjs';
+import { createHmac } from 'node:crypto';
 
 const tenantId = '11111111-1111-4111-8111-111111111111';
 const userId = '22222222-2222-4222-8222-222222222222';
@@ -73,4 +75,27 @@ test('rejects failed session resolution before connecting', async () => {
     resolveSession: async () => { throw new Error('invalid signature'); },
   }, {}, tenantId, input), /invalid signature/);
   assert.equal(connected, false);
+});
+
+test('accepts cryptographically verified bearer token and rejects altered signature', async () => {
+  const secret = 'test-only-high-entropy-secret-not-for-production-123';
+  const issuer = 'mercadinho-auth', audience = 'mercadinho-api', timestamp = 1800000000;
+  const resolveSession = createHmacSessionResolver({ secret, issuer, audience, now: () => timestamp });
+  const encoded = [
+    {alg:'HS256',typ:'JWT'},
+    {iss:issuer,aud:audience,sub:userId,iat:timestamp-30,exp:timestamp+60},
+  ].map(x => Buffer.from(JSON.stringify(x)).toString('base64url')).join('.');
+  const token = encoded + '.' + createHmac('sha256',secret).update(encoded).digest('base64url');
+  const db = setup();
+  const result = await executeStockMovement({ pool: db.pool, resolveSession },
+    {headers:{authorization:'Bearer '+token}}, tenantId, input);
+  assert.equal(result.resultingQuantity, 2);
+  assert.equal(db.released, true);
+  let connected = false;
+  const badToken = token.slice(0,-1)+(token.endsWith('A')?'B':'A');
+  await assert.rejects(executeStockMovement({
+    pool: {connect: async () => { connected = true; }},
+    resolveSession,
+  }, {headers:{authorization:'Bearer '+badToken}}, tenantId, input));
+  assert.equal(connected,false);
 });
