@@ -34,3 +34,17 @@ test('requires server config and authorization header', async () => {
   assert.throws(()=>createHmacSessionResolver({...config,secret:'short'}));
   await assert.rejects(createHmacSessionResolver(config)({headers:{}}));
 });
+
+test('rejects malformed token, unexpected headers and invalid claims', async () => {
+  const resolve = createHmacSessionResolver(config);
+  for (const token of [
+    'not-a-token',
+    sign(claims,{alg:'HS256',kid:'untrusted-key'}),
+    sign(claims,{alg:'HS256',crit:['exp']}),
+    sign({...claims,iat:1799990000}),
+    sign({...claims,nbf:'tomorrow'}),
+    sign({...claims,exp:'1800000100'}),
+  ]) {
+    await assert.rejects(resolve(req(token)));
+  }
+});
