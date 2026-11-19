@@ -134,3 +134,10 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Busca de PRs confirmou que a PR #1 está **mesclada**. Aberta a PR **#2** como rascunho para validar mudanças posteriores; não executar novo merge sem aprovação.
 - Novo fluxo de CI aceita push na branch `chore/agent-execution-workflow` e pull requests. O conector de runs PR ainda não retornou execução para o HEAD `18f5a2e` na consulta; **não presumir CI verde**.
 - Próxima ação objetiva: consultar checks da PR #2; corrigir SQL/RLS ou testes Node se falharem. Se não houver execução, verificar GitHub Actions manualmente antes de habilitar integração real.
+
+## Ciclo de 2026-11-19 — endurecimento de RLS
+- PR #2 criada como rascunho após confirmação de que a PR #1 foi mesclada anteriormente.
+- `tests/postgres_rls.sql` agora verifica que a falha de escrita entre empresas vem **especificamente da política RLS**, em vez de aceitar qualquer erro de permissão. Grants de teste são explícitos e revogados ao final.
+- `src/server/stock-application.mjs` combina sessão verificada, associação e lançamento de estoque na mesma transação, sem endpoint HTTP.
+- O conector GitHub não retornou execução CI para o HEAD desta rodada; **sem validação SQL concluída**. Não realizar merge até validar a PR #2.
+- **Próximas cinco tarefas:** (1) obter execução CI e corrigir SQL; (2) testar RLS de memberships, saldos e movimentos; (3) implementar provedor de sessão seguro; (4) criar papel de DB com grants mínimos e teste de integração; (5) criar API somente após autenticação e CSRF.
