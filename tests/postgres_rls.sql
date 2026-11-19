@@ -18,6 +18,9 @@ CREATE ROLE mercadinho_rls_test NOLOGIN;
 GRANT USAGE ON SCHEMA public TO mercadinho_rls_test;
 GRANT SELECT, INSERT ON products TO mercadinho_rls_test;
 GRANT SELECT ON tenants TO mercadinho_rls_test;
+GRANT SELECT ON tenant_memberships TO mercadinho_rls_test;
+GRANT SELECT ON stock_balances TO mercadinho_rls_test;
+GRANT SELECT ON stock_movements TO mercadinho_rls_test;
 SET ROLE mercadinho_rls_test;
 DO $$
 BEGIN
@@ -60,5 +63,8 @@ COMMIT;
 RESET ROLE;
 REVOKE SELECT, INSERT ON products FROM mercadinho_rls_test;
 REVOKE SELECT ON tenants FROM mercadinho_rls_test;
+REVOKE SELECT ON tenant_memberships FROM mercadinho_rls_test;
+REVOKE SELECT ON stock_balances FROM mercadinho_rls_test;
+REVOKE SELECT ON stock_movements FROM mercadinho_rls_test;
 REVOKE USAGE ON SCHEMA public FROM mercadinho_rls_test;
 DROP ROLE mercadinho_rls_test;
