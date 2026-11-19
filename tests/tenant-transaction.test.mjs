@@ -35,3 +35,25 @@ test('rejects invalid context before connecting', async () => {
   await assert.rejects(withTenantTransaction({ connect: async () => { connected = true; } }, '../bad', async () => null));
   assert.equal(connected, false);
 });
+
+test('releases malformed client with release method', async () => {
+  let released = false;
+  await assert.rejects(withTenantTransaction({ connect: async () => ({
+    release: () => { released = true; },
+  }) }, 'tenant_01', async () => null), /invalid dedicated PostgreSQL connection/);
+  assert.equal(released, true);
+});
+test('rolls back when commit fails and preserves error', async () => {
+  const queries = [];
+  let released = false;
+  const pool = { connect: async () => ({
+    query: async sql => {
+      queries.push(sql);
+      if (sql === 'COMMIT') throw Error('commit failed');
+    },
+    release: () => { released = true; },
+  }) };
+  await assert.rejects(withTenantTransaction(pool, 'tenant_01', async () => 'ok'), /commit failed/);
+  assert.ok(queries.includes('ROLLBACK'));
+  assert.equal(released, true);
+});
