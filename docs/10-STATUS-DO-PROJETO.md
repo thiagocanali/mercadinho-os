@@ -162,3 +162,11 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - **Não é configuração de produção:** role e grants existem apenas no banco efêmero de CI; nenhum banco Neon foi alterado.
 - **Validação pendente:** ainda é necessário observar uma execução do workflow que inclua o novo teste; não considerar aprovado sem evidência.
 - Próximas prioridades: (1) verificar execução e corrigir falhas SQL; (2) revisar limites e grants do papel backend; (3) integrar provedor real de identidade; (4) preparar rotas autenticadas e proteções HTTP; (5) validar fluxo completo em ambiente isolado.
+
+## Ciclo de endurecimento — 2026-11-19 (UUID, JWT e contexto transacional)
+- `withTenantTransaction` passa a exigir UUID PostgreSQL válido **antes** de adquirir uma conexão. Testes atualizados para UUID real e rejeição de identificadores opacos.
+- O verificador HS256 rejeita tokens cuja expiração não seja posterior à emissão e cabeçalhos JWT que não sejam objetos. Testes de regressão adicionados.
+- O teste SQL de role restrita verifica que o contexto `app.tenant_id` configurado via `set_config(..., true)` **não vaza após COMMIT**.
+- Alterações commitadas na branch da PR #2. Sem alteração de produção.
+- A consulta de workflows associada ao HEAD anterior continuou sem resultados; **a CI nova ainda precisa de validação real**.
+- Próximas cinco tarefas: (1) confirmar workflow na PR #2; (2) corrigir qualquer falha Node/PostgreSQL; (3) revisar role backend e grants; (4) integrar emissor confiável com revogação; (5) criar API autenticada e proteções HTTP.
