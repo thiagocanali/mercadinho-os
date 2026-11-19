@@ -1,38 +1,16 @@
-name: Documentation validation
+name: CI validation
 
+# Always emit PR checks: path-filtered required checks can remain pending.
 on:
   pull_request:
-    paths:
-      - '**/*.md'
-      - 'scripts/check_docs.py'
-      - 'tests/test_check_docs.py'
-      - 'tests/*.test.mjs'
-      - 'tests/*.sql'
-      - 'tests/*.sh'
-      - 'src/domain/**'
-      - 'src/server/**'
-      - 'database/migrations/**'
-      - 'tsconfig.json'
-      - 'package.json'
-      - 'nuxt.config.ts'
-      - 'app/**'
-      - '.gitignore'
-      - '.env.example'
-      - '.github/workflows/docs.yml'
   push:
-    branches: [main, chore/agent-execution-workflow]
-    paths:
-      - '**/*.md'
-      - 'scripts/check_docs.py'
-      - 'tests/**'
-      - 'src/**'
-      - 'database/migrations/**'
-      - 'package.json'
-      - 'tsconfig.json'
-      - 'nuxt.config.ts'
-      - 'app/**'
-      - '.github/workflows/docs.yml'
+    branches: [main]
   workflow_dispatch:
+
+# Cancel outdated PR runs; do not cancel a main branch validation.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -40,7 +18,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -64,7 +42,7 @@ jobs:
 
   postgres-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16
