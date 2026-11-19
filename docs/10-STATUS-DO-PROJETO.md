@@ -121,3 +121,11 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - **Limitação de segurança:** a variável PostgreSQL `app.tenant_id` é modificável por clientes SQL; RLS não autentica o usuário. Somente backend confiável pode conectar. Grants para role restrita, provedor real de sessão e integração de endpoints permanecem pendentes.
 - **CI do HEAD atual:** ainda não confirmada; testes SQL novos dependem de GitHub Actions.
 - **Próximas cinco tarefas:** (1) validar e corrigir CI RLS; (2) testar escrita cross-tenant e grants mínimos; (3) conectar autenticação real server-side; (4) implementar integração transacional entre adapters e banco; (5) criar endpoints de produtos/estoque apenas com autorização verificada.
+
+## Continuidade — 2026-11-19 (composição e segurança)
+- Corrigido o delimitador do bloco PL/pgSQL em `tests/postgres_rls.sql` (commit `c0fb302`).
+- Corrigida liberação de conexão inválida em `src/server/tenant-transaction.mjs`; adicionados testes de rollback em falha de commit.
+- Implementado `src/server/stock-application.mjs`: composição de sessão verificada, consulta de associação e lançamento de estoque em uma única transação com contexto tenant; testes unitários adicionados.
+- **Não há autenticação real nem endpoint HTTP**. A composição depende de um resolvedor externo confiável, e o banco ainda não tem grants de aplicação configurados.
+- Na consulta, o GitHub não retornou workflow PR para o HEAD recente; **nenhum teste SQL novo foi confirmado em CI**. Próxima ação: executar CI na branch de trabalho e corrigir falhas.
+- **Próximas cinco tarefas:** (1) executar/corrigir CI PostgreSQL e Node; (2) testar privilégios mínimos com role restrita; (3) integrar um provedor de autenticação confiável; (4) criar rotas de API autenticadas com proteção CSRF e validação; (5) validar integração com banco efêmero antes de provisionar desenvolvimento.
