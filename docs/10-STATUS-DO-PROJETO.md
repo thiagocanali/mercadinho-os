@@ -154,3 +154,11 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - `docs/23-AUTENTICACAO-SERVER.md` documenta limites: emissor confiável, revogação, role SQL restrita e validação de CI ainda pendentes.
 - RLS de quatro tabelas e testes de estoque de ciclos anteriores seguem sem confirmação por PostgreSQL runner. Consultas de workflow do HEAD não retornaram execuções.
 - **Próximas cinco tarefas:** (1) obter CI Node/PostgreSQL no GitHub Actions; (2) configurar role restrita em banco efêmero e testar grants; (3) integrar emissor de sessão com rotação/revogação; (4) adicionar rate limit e API autenticada; (5) validar UX e fluxos completos sem deploy de produção.
+
+## Lote de segurança PostgreSQL — 2026-11-19
+- Adicionado `tests/postgres_restricted_role.sql`, executado após `postgres_rls.sql`, com papel temporário `NOBYPASSRLS` e grants explícitos.
+- Casos cobertos: lançamento autorizado no tenant A, replay idempotente e rejeição de lançamento para tenant B sob contexto A.
+- Workflow PostgreSQL passa a incluir a etapa `Test restricted backend role stock posting`.
+- **Não é configuração de produção:** role e grants existem apenas no banco efêmero de CI; nenhum banco Neon foi alterado.
+- **Validação pendente:** ainda é necessário observar uma execução do workflow que inclua o novo teste; não considerar aprovado sem evidência.
+- Próximas prioridades: (1) verificar execução e corrigir falhas SQL; (2) revisar limites e grants do papel backend; (3) integrar provedor real de identidade; (4) preparar rotas autenticadas e proteções HTTP; (5) validar fluxo completo em ambiente isolado.
