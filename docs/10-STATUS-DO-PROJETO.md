@@ -147,3 +147,10 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - Expandido `tests/stock-application.test.mjs` para rejeitar associação de outra empresa, quantidade inválida e falha na resolução da sessão, sem executar a função SQL.
 - **CI:** buscas de workflows e status do HEAD não retornaram execuções/checks. Esses novos testes ainda não foram confirmados por runner; PR #2 permanece rascunho.
 - **Próximas cinco tarefas:** (1) investigar execução de Actions na PR #2; (2) validar scripts PostgreSQL 16 e corrigir falhas; (3) implementar role backend com privilégios mínimos e teste de integração; (4) conectar autenticação criptográfica real; (5) implementar endpoints autenticados após controles CSRF/rate limit.
+
+## Ciclo de autenticação — 2026-11-19
+- Implementado verificador de sessão Bearer JWT HS256 em `src/server/hmac-session.mjs` com HMAC e comparação segura, claims obrigatórias e TTL máximo de 1h. **É um verificador, não um sistema de login**.
+- Testes de assinatura inválida, expiração, claims malformadas e integração do token assinado com a composição de estoque.
+- `docs/23-AUTENTICACAO-SERVER.md` documenta limites: emissor confiável, revogação, role SQL restrita e validação de CI ainda pendentes.
+- RLS de quatro tabelas e testes de estoque de ciclos anteriores seguem sem confirmação por PostgreSQL runner. Consultas de workflow do HEAD não retornaram execuções.
+- **Próximas cinco tarefas:** (1) obter CI Node/PostgreSQL no GitHub Actions; (2) configurar role restrita em banco efêmero e testar grants; (3) integrar emissor de sessão com rotação/revogação; (4) adicionar rate limit e API autenticada; (5) validar UX e fluxos completos sem deploy de produção.
