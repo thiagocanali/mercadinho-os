@@ -141,3 +141,9 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - `src/server/stock-application.mjs` combina sessão verificada, associação e lançamento de estoque na mesma transação, sem endpoint HTTP.
 - O conector GitHub não retornou execução CI para o HEAD desta rodada; **sem validação SQL concluída**. Não realizar merge até validar a PR #2.
 - **Próximas cinco tarefas:** (1) obter execução CI e corrigir SQL; (2) testar RLS de memberships, saldos e movimentos; (3) implementar provedor de sessão seguro; (4) criar papel de DB com grants mínimos e teste de integração; (5) criar API somente após autenticação e CSRF.
+
+## Ciclo de continuidade — 2026-11-19 (ampliação de testes)
+- Expandido `tests/postgres_rls.sql` com fixtures e verificações de **quatro tabelas**: `products`, `tenant_memberships`, `stock_balances`, `stock_movements`. Os cenários cobrem ausência de contexto e seleção isolada de duas empresas.
+- Expandido `tests/stock-application.test.mjs` para rejeitar associação de outra empresa, quantidade inválida e falha na resolução da sessão, sem executar a função SQL.
+- **CI:** buscas de workflows e status do HEAD não retornaram execuções/checks. Esses novos testes ainda não foram confirmados por runner; PR #2 permanece rascunho.
+- **Próximas cinco tarefas:** (1) investigar execução de Actions na PR #2; (2) validar scripts PostgreSQL 16 e corrigir falhas; (3) implementar role backend com privilégios mínimos e teste de integração; (4) conectar autenticação criptográfica real; (5) implementar endpoints autenticados após controles CSRF/rate limit.
