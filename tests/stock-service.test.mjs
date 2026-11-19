@@ -8,7 +8,7 @@ const context = (role='manager') => ({
   scope: tenantScope('market_01'),
   membership: { tenantId: 'market_01', userId: 'user_01', role },
 });
-const input = () => ({ productId: 'p1', idempotencyKey: 'req-1', direction: 'in', quantity: 3 });
+const input = () => ({ productId: '33333333-3333-4333-8333-333333333333', idempotencyKey: 'req-1', direction: 'in', quantity: 3 });
 
 test('passes only verified identity and scoped fields to adapter', async () => {
   let received;
@@ -37,7 +37,7 @@ test('rejects cross-tenant membership', async () => {
   }, input(), { postStockMovement: async () => null }));
 });
 test('rejects invalid input before DB call', async () => {
-  for (const bad of [{ ...input(), quantity: 0 }, { ...input(), direction: 'delete' }, { ...input(), idempotencyKey: '' }, { ...input(), productId: '' }]) {
+  for (const bad of [{ ...input(), quantity: 0 }, { ...input(), direction: 'delete' }, { ...input(), idempotencyKey: '' }, { ...input(), productId: '' }, { ...input(), productId: 'p1' }, { ...input(), idempotencyKey: ' req-1 ' }]) {
     await assert.rejects(postStockFromVerifiedContext(context(), bad, { postStockMovement: async () => null }));
   }
 });
