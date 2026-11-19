@@ -129,3 +129,8 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - **Não há autenticação real nem endpoint HTTP**. A composição depende de um resolvedor externo confiável, e o banco ainda não tem grants de aplicação configurados.
 - Na consulta, o GitHub não retornou workflow PR para o HEAD recente; **nenhum teste SQL novo foi confirmado em CI**. Próxima ação: executar CI na branch de trabalho e corrigir falhas.
 - **Próximas cinco tarefas:** (1) executar/corrigir CI PostgreSQL e Node; (2) testar privilégios mínimos com role restrita; (3) integrar um provedor de autenticação confiável; (4) criar rotas de API autenticadas com proteção CSRF e validação; (5) validar integração com banco efêmero antes de provisionar desenvolvimento.
+
+## Retomada operacional — 2026-11-19
+- Busca de PRs confirmou que a PR #1 está **mesclada**. Aberta a PR **#2** como rascunho para validar mudanças posteriores; não executar novo merge sem aprovação.
+- Novo fluxo de CI aceita push na branch `chore/agent-execution-workflow` e pull requests. O conector de runs PR ainda não retornou execução para o HEAD `18f5a2e` na consulta; **não presumir CI verde**.
+- Próxima ação objetiva: consultar checks da PR #2; corrigir SQL/RLS ou testes Node se falharem. Se não houver execução, verificar GitHub Actions manualmente antes de habilitar integração real.
