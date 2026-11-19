@@ -20,7 +20,7 @@ test('verifies signature and returns only trusted internal user ID', async () =>
 });
 test('rejects unsigned, wrong key, wrong algorithm and tampering', async () => {
   const resolve = createHmacSessionResolver(config);
-  for (const token of [sign(claims,{alg:'none'}),sign(claims,undefined,'wrong-secret'),sign({...claims,sub:'not-a-uuid'}),sign({...claims,exp:1800000001}).replace(/.$/,'A')]) {
+  for (const token of [sign(claims,{alg:'none'}),sign(claims,undefined,'wrong-secret'),sign({...claims,sub:'not-a-uuid'}),sign({...claims,exp:1800000001}).replace(/^./, 'X')]) {
     await assert.rejects(resolve(req(token)));
   }
 });
