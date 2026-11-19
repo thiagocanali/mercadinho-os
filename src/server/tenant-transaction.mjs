@@ -13,6 +13,7 @@ export async function withTenantTransaction(pool, tenantId, operation) {
   }
   const client = await pool.connect();
   if (typeof client?.query !== 'function' || typeof client?.release !== 'function') {
+    if (typeof client?.release === 'function') client.release();
     throw new TypeError('invalid dedicated PostgreSQL connection');
   }
   let begun = false;
