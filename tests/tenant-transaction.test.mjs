@@ -1,0 +1,37 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { withTenantTransaction } from '../src/server/tenant-transaction.mjs';
+
+test('uses transaction-local parameterized tenant context', async () => {
+  const queries = [];
+  let released = false;
+  const pool = { connect: async () => ({
+    query: async (...args) => { queries.push(args); return { rows: [] }; },
+    release: () => { released = true; },
+  }) };
+  const value = await withTenantTransaction(pool, 'tenant_01', async client => {
+    await client.query('SELECT 1');
+    return 42;
+  });
+  assert.equal(value, 42);
+  assert.deepEqual(queries.map(q => q[0]), ['BEGIN', "SELECT set_config('app.tenant_id', $1, true)", 'SELECT 1', 'COMMIT']);
+  assert.deepEqual(queries[1][1], ['tenant_01']);
+  assert.equal(released, true);
+});
+test('rolls back and releases on error', async () => {
+  const queries = [];
+  let released = false;
+  const pool = { connect: async () => ({
+    query: async sql => { queries.push(sql); },
+    release: () => { released = true; },
+  }) };
+  await assert.rejects(withTenantTransaction(pool, 'tenant_01', async () => { throw Error('boom'); }), /boom/);
+  assert.ok(queries.includes('ROLLBACK'));
+  assert.ok(!queries.includes('COMMIT'));
+  assert.equal(released, true);
+});
+test('rejects invalid context before connecting', async () => {
+  let connected = false;
+  await assert.rejects(withTenantTransaction({ connect: async () => { connected = true; } }, '../bad', async () => null));
+  assert.equal(connected, false);
+});
