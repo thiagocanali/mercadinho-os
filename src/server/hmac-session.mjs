@@ -37,7 +37,7 @@ export function createHmacSessionResolver({ secret, issuer, audience, now = () =
       header = decodeSegment(parts[0]);
       payload = decodeSegment(parts[1]);
     } catch { throw new Error('invalid token'); }
-    if (!header || header.alg !== 'HS256' || (header.typ !== undefined && header.typ !== 'JWT') ||
+    if (!header || typeof header !== 'object' || Array.isArray(header) || header.alg !== 'HS256' || (header.typ !== undefined && header.typ !== 'JWT') ||
         header.crit !== undefined || header.kid !== undefined ||
         !payload || typeof payload !== 'object' || Array.isArray(payload)) {
       throw new Error('invalid token');
@@ -50,7 +50,7 @@ export function createHmacSessionResolver({ secret, issuer, audience, now = () =
     if (!Number.isSafeInteger(current) || payload.iss !== issuer || payload.aud !== audience ||
         typeof payload.sub !== 'string' || !UUID.test(payload.sub) ||
         !Number.isSafeInteger(payload.exp) || payload.exp <= current ||
-        !Number.isSafeInteger(payload.iat) || payload.iat > current ||
+        !Number.isSafeInteger(payload.iat) || payload.iat > current || payload.exp <= payload.iat ||
         payload.exp - payload.iat > 3600 ||
         (payload.nbf !== undefined && (!Number.isSafeInteger(payload.nbf) || payload.nbf > current))) {
       throw new Error('invalid token');
