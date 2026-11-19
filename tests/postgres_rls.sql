@@ -17,6 +17,7 @@ INSERT INTO products(tenant_id,id,sku,name,unit_price_centavos) VALUES
 CREATE ROLE mercadinho_rls_test NOLOGIN;
 GRANT USAGE ON SCHEMA public TO mercadinho_rls_test;
 GRANT SELECT, INSERT ON products TO mercadinho_rls_test;
+GRANT SELECT ON tenants TO mercadinho_rls_test;
 SET ROLE mercadinho_rls_test;
 DO $$
 BEGIN
@@ -39,7 +40,10 @@ BEGIN
     INSERT INTO products(tenant_id,id,sku,name,unit_price_centavos)
       VALUES ('22222222-2222-4222-8222-222222222222', gen_random_uuid(), 'attack', 'Cross tenant', 1);
     RAISE EXCEPTION 'expected cross-tenant insert rejection';
-  EXCEPTION WHEN insufficient_privilege THEN NULL;
+  EXCEPTION WHEN insufficient_privilege THEN
+    IF SQLERRM NOT LIKE '%row-level security policy%' THEN
+      RAISE;
+    END IF;
   END;
 END $$;
 COMMIT;
@@ -55,5 +59,6 @@ END $$;
 COMMIT;
 RESET ROLE;
 REVOKE SELECT, INSERT ON products FROM mercadinho_rls_test;
+REVOKE SELECT ON tenants FROM mercadinho_rls_test;
 REVOKE USAGE ON SCHEMA public FROM mercadinho_rls_test;
 DROP ROLE mercadinho_rls_test;
