@@ -36,14 +36,14 @@ END $$;
 COMMIT;
 
 -- A transaction-local tenant GUC must not leak into the next transaction.
-DO $
+DO $$
 BEGIN
   IF (SELECT count(*) FROM tenant_memberships) <> 0 OR
      (SELECT count(*) FROM stock_balances) <> 0 OR
      (SELECT count(*) FROM stock_movements) <> 0 THEN
     RAISE EXCEPTION 'tenant context leaked after COMMIT';
   END IF;
-END $;
+END $$;
 
 BEGIN;
 SELECT set_config('app.tenant_id','11111111-1111-4111-8111-111111111111',true);
