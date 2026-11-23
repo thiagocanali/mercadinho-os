@@ -53,3 +53,18 @@ test('rejects JWT with an array header', async () => {
   const resolve = createHmacSessionResolver(config);
   await assert.rejects(resolve(req(sign(claims, ['HS256']))));
 });
+
+test('rejects malformed signatures and noncanonical base64url segments', async () => {
+  const resolve = createHmacSessionResolver(config);
+  const valid = sign(claims);
+  const [header, payload, signature] = valid.split('.');
+  for (const token of [
+    [header, payload, 'invalid'].join('.'),
+    [header, payload, signature + '='].join('.'),
+    [header + '=', payload, signature].join('.'),
+    [header, payload + '=', signature].join('.'),
+    [header, payload, ''].join('.'),
+  ]) {
+    await assert.rejects(resolve(req(token)));
+  }
+});
