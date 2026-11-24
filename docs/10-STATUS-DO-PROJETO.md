@@ -112,3 +112,88 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 
 - Complemento: `src/server/postgres-membership-adapter.mjs` consulta associação por `tenant_id` e `user_id` usando parâmetros SQL e rejeita respostas inconsistentes; testes Node adicionados. **Ainda sem autenticação real ou permissões DB de produção.**
 - CI #54 para HEAD anterior `47533f4`: em execução na consulta. O commit mais recente do adaptador de associação aguarda CI.
+
+## Lote de continuidade — 2026-11-19 (RLS e transações)
+- CI #56 no commit `aeb9497`: **completed/success**.
+- Migration `0004_tenant_rls.sql`: habilita e força RLS em associações, produtos, saldos e movimentos; política por `app.tenant_id`.
+- `tests/postgres_rls.sql`: valida negação sem contexto e leitura isolada para duas empresas em role não proprietária. CI executa após os testes de concorrência.
+- `src/server/tenant-transaction.mjs`: contexto tenant configurado por `set_config(..., true)` em conexão dedicada e transação, com rollback/release e testes.
+- **Limitação de segurança:** a variável PostgreSQL `app.tenant_id` é modificável por clientes SQL; RLS não autentica o usuário. Somente backend confiável pode conectar. Grants para role restrita, provedor real de sessão e integração de endpoints permanecem pendentes.
+- **CI do HEAD atual:** ainda não confirmada; testes SQL novos dependem de GitHub Actions.
+- **Próximas cinco tarefas:** (1) validar e corrigir CI RLS; (2) testar escrita cross-tenant e grants mínimos; (3) conectar autenticação real server-side; (4) implementar integração transacional entre adapters e banco; (5) criar endpoints de produtos/estoque apenas com autorização verificada.
+
+## Continuidade — 2026-11-19 (composição e segurança)
+- Corrigido o delimitador do bloco PL/pgSQL em `tests/postgres_rls.sql` (commit `c0fb302`).
+- Corrigida liberação de conexão inválida em `src/server/tenant-transaction.mjs`; adicionados testes de rollback em falha de commit.
+- Implementado `src/server/stock-application.mjs`: composição de sessão verificada, consulta de associação e lançamento de estoque em uma única transação com contexto tenant; testes unitários adicionados.
+- **Não há autenticação real nem endpoint HTTP**. A composição depende de um resolvedor externo confiável, e o banco ainda não tem grants de aplicação configurados.
+- Na consulta, o GitHub não retornou workflow PR para o HEAD recente; **nenhum teste SQL novo foi confirmado em CI**. Próxima ação: executar CI na branch de trabalho e corrigir falhas.
+- **Próximas cinco tarefas:** (1) executar/corrigir CI PostgreSQL e Node; (2) testar privilégios mínimos com role restrita; (3) integrar um provedor de autenticação confiável; (4) criar rotas de API autenticadas com proteção CSRF e validação; (5) validar integração com banco efêmero antes de provisionar desenvolvimento.
+
+## Retomada operacional — 2026-11-19
+- Busca de PRs confirmou que a PR #1 está **mesclada**. Aberta a PR **#2** como rascunho para validar mudanças posteriores; não executar novo merge sem aprovação.
+- Novo fluxo de CI aceita push na branch `chore/agent-execution-workflow` e pull requests. O conector de runs PR ainda não retornou execução para o HEAD `18f5a2e` na consulta; **não presumir CI verde**.
+- Próxima ação objetiva: consultar checks da PR #2; corrigir SQL/RLS ou testes Node se falharem. Se não houver execução, verificar GitHub Actions manualmente antes de habilitar integração real.
+
+## Ciclo de 2026-11-19 — endurecimento de RLS
+- PR #2 criada como rascunho após confirmação de que a PR #1 foi mesclada anteriormente.
+- `tests/postgres_rls.sql` agora verifica que a falha de escrita entre empresas vem **especificamente da política RLS**, em vez de aceitar qualquer erro de permissão. Grants de teste são explícitos e revogados ao final.
+- `src/server/stock-application.mjs` combina sessão verificada, associação e lançamento de estoque na mesma transação, sem endpoint HTTP.
+- O conector GitHub não retornou execução CI para o HEAD desta rodada; **sem validação SQL concluída**. Não realizar merge até validar a PR #2.
+- **Próximas cinco tarefas:** (1) obter execução CI e corrigir SQL; (2) testar RLS de memberships, saldos e movimentos; (3) implementar provedor de sessão seguro; (4) criar papel de DB com grants mínimos e teste de integração; (5) criar API somente após autenticação e CSRF.
+
+## Ciclo de continuidade — 2026-11-19 (ampliação de testes)
+- Expandido `tests/postgres_rls.sql` com fixtures e verificações de **quatro tabelas**: `products`, `tenant_memberships`, `stock_balances`, `stock_movements`. Os cenários cobrem ausência de contexto e seleção isolada de duas empresas.
+- Expandido `tests/stock-application.test.mjs` para rejeitar associação de outra empresa, quantidade inválida e falha na resolução da sessão, sem executar a função SQL.
+- **CI:** buscas de workflows e status do HEAD não retornaram execuções/checks. Esses novos testes ainda não foram confirmados por runner; PR #2 permanece rascunho.
+- **Próximas cinco tarefas:** (1) investigar execução de Actions na PR #2; (2) validar scripts PostgreSQL 16 e corrigir falhas; (3) implementar role backend com privilégios mínimos e teste de integração; (4) conectar autenticação criptográfica real; (5) implementar endpoints autenticados após controles CSRF/rate limit.
+
+## Ciclo de autenticação — 2026-11-19
+- Implementado verificador de sessão Bearer JWT HS256 em `src/server/hmac-session.mjs` com HMAC e comparação segura, claims obrigatórias e TTL máximo de 1h. **É um verificador, não um sistema de login**.
+- Testes de assinatura inválida, expiração, claims malformadas e integração do token assinado com a composição de estoque.
+- `docs/23-AUTENTICACAO-SERVER.md` documenta limites: emissor confiável, revogação, role SQL restrita e validação de CI ainda pendentes.
+- RLS de quatro tabelas e testes de estoque de ciclos anteriores seguem sem confirmação por PostgreSQL runner. Consultas de workflow do HEAD não retornaram execuções.
+- **Próximas cinco tarefas:** (1) obter CI Node/PostgreSQL no GitHub Actions; (2) configurar role restrita em banco efêmero e testar grants; (3) integrar emissor de sessão com rotação/revogação; (4) adicionar rate limit e API autenticada; (5) validar UX e fluxos completos sem deploy de produção.
+
+## Lote de segurança PostgreSQL — 2026-11-19
+- Adicionado `tests/postgres_restricted_role.sql`, executado após `postgres_rls.sql`, com papel temporário `NOBYPASSRLS` e grants explícitos.
+- Casos cobertos: lançamento autorizado no tenant A, replay idempotente e rejeição de lançamento para tenant B sob contexto A.
+- Workflow PostgreSQL passa a incluir a etapa `Test restricted backend role stock posting`.
+- **Não é configuração de produção:** role e grants existem apenas no banco efêmero de CI; nenhum banco Neon foi alterado.
+- **Validação pendente:** ainda é necessário observar uma execução do workflow que inclua o novo teste; não considerar aprovado sem evidência.
+- Próximas prioridades: (1) verificar execução e corrigir falhas SQL; (2) revisar limites e grants do papel backend; (3) integrar provedor real de identidade; (4) preparar rotas autenticadas e proteções HTTP; (5) validar fluxo completo em ambiente isolado.
+
+## Ciclo de endurecimento — 2026-11-19 (UUID, JWT e contexto transacional)
+- `withTenantTransaction` passa a exigir UUID PostgreSQL válido **antes** de adquirir uma conexão. Testes atualizados para UUID real e rejeição de identificadores opacos.
+- O verificador HS256 rejeita tokens cuja expiração não seja posterior à emissão e cabeçalhos JWT que não sejam objetos. Testes de regressão adicionados.
+- O teste SQL de role restrita verifica que o contexto `app.tenant_id` configurado via `set_config(..., true)` **não vaza após COMMIT**.
+- Alterações commitadas na branch da PR #2. Sem alteração de produção.
+- A consulta de workflows associada ao HEAD anterior continuou sem resultados; **a CI nova ainda precisa de validação real**.
+- Próximas cinco tarefas: (1) confirmar workflow na PR #2; (2) corrigir qualquer falha Node/PostgreSQL; (3) revisar role backend e grants; (4) integrar emissor confiável com revogação; (5) criar API autenticada e proteções HTTP.
+
+## Revisão de validação de entradas — 2026-11-19
+- `src/server/stock-service.mjs` valida `productId` como UUID PostgreSQL e exige chave de idempotência sem espaços nas extremidades. Entradas inválidas são rejeitadas antes da chamada ao adaptador SQL.
+- Fixtures de `tests/stock-service.test.mjs` migradas para UUID válido; novos cenários rejeitam produto inválido e chave não canônica.
+- Teste JWT ajustado para adulteração determinística.
+- **CI continua sem runs/status retornados pelo conector para HEAD consultado**; não presumir sucesso. PR #2 segue rascunho, sem merge nem deploy.
+- Próximas tarefas: (1) executar Actions e analisar logs; (2) testar role SQL restrita no PostgreSQL 16; (3) selecionar emissor confiável com revogação; (4) adicionar endpoint autenticado após threat review; (5) implementar testes ponta a ponta em ambiente isolado.
+
+## Auditoria GitHub/CI e política de autonomia — 2026-11-19
+- Encontrada uma PR aberta da frente (`#2`), mantida como rascunho. Não criar PR duplicada.
+- `AGENTS.md` e `CODEX-WORKFLOW.md` atualizados para lotes de 5–10 tarefas, commits coesos, reutilização de PR, squash/auto-merge condicionado a autorização, CI e revisões.
+- Workflow `.github/workflows/docs.yml`: executa em **toda PR** (sem filtro de paths), push na `main` e disparo manual; cancela runs de PR obsoletos por concorrência e mantém validações de `main` sem cancelamento.
+- O filtro de paths anterior poderia deixar checks obrigatórios pendentes em PRs que não correspondessem aos caminhos.
+- Não foram modificados branch protection, rulesets, reviewers, deploys ou configurações Vercel.
+- **Pendente:** confirmar nomes dos checks exigidos e as regras reais da `main`; o conector disponível não oferece leitura direta dessas proteções. A consulta de runs do HEAD não prova ausência de Actions porque filtra execuções por evento PR.
+- **Bloqueio de integração:** PR #2 contém mudanças de autenticação e banco, exige CI verificável e revisão adicional; não marcar pronta ou mesclar até validação.
+
+## Continuidade da auditoria de CI — 2026-11-19
+- Implementado `tests/test_workflow_policy.py` (descoberto pelo `python -m unittest discover`) para garantir checks em toda PR, push somente na `main`, cancelamento apenas de PR, permissões mínimas e presença dos jobs/testes críticos.
+- Criado `docs/24-AUDITORIA-GITHUB-CI.md` com checklist para rulesets, branch protection, checks obrigatórios, diagnóstico de Actions e custos de CI/Vercel.
+- O repositório **não possui `package-lock.json`** no branch auditado; o workflow usa `npm install`. Para builds reprodutíveis, gerar lockfile válido e trocar para `npm ci` em lote posterior, após testar a instalação.
+- Consulta de runs do HEAD anterior retornou vazio; a API do conector cobre apenas runs de PR, portanto o resultado **não comprova** ausência de CI.
+- **Pendente:** obter logs e checks reais, validar a nova suíte, ler regras efetivas da `main` com permissão adequada, revisar alterações de autenticação/banco antes de merge. PR #2 segue rascunho.
+
+## Instalação reprodutível na CI — 2026-11-23
+
+- Na PR #2, o `package-lock.json` foi gerado com `npm install --package-lock-only` e versionado. A CI usa `npm ci` e a etapa temporária de upload do lockfile foi removida.
