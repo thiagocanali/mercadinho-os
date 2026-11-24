@@ -43,3 +43,7 @@ No GitHub, consultar **Settings → Rules → Rulesets** e **Settings → Branch
 - Verificar rulesets e branch protection com acesso apropriado.
 - Obter execução real e logs da CI no HEAD.
 - Confirmar os nomes dos checks exigidos antes de qualquer eventual alteração de configuração.
+
+## Instalação de dependências
+
+- O job `validate` usa `npm ci` com o `package-lock.json` versionado.

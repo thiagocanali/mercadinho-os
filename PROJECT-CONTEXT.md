@@ -20,3 +20,5 @@
 **Riscos:** indisponibilidade de internet/energia no piloto, custos de escala, inconsistência offline, falhas de isolamento e requisitos fiscais.
 
 Ver `docs/05-ROADMAP.md`, `docs/09-DECISOES-TECNICAS.md` e `docs/10-STATUS-DO-PROJETO.md`.
+
+A CI da PR #2 instala dependências com `npm ci` a partir do `package-lock.json` versionado.

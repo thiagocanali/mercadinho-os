@@ -193,3 +193,7 @@ Isolamento entre estabelecimentos, consistência offline, requisitos fiscais, cu
 - O repositório **não possui `package-lock.json`** no branch auditado; o workflow usa `npm install`. Para builds reprodutíveis, gerar lockfile válido e trocar para `npm ci` em lote posterior, após testar a instalação.
 - Consulta de runs do HEAD anterior retornou vazio; a API do conector cobre apenas runs de PR, portanto o resultado **não comprova** ausência de CI.
 - **Pendente:** obter logs e checks reais, validar a nova suíte, ler regras efetivas da `main` com permissão adequada, revisar alterações de autenticação/banco antes de merge. PR #2 segue rascunho.
+
+## Instalação reprodutível na CI — 2026-11-23
+
+- Na PR #2, o `package-lock.json` foi gerado com `npm install --package-lock-only` e versionado. A CI usa `npm ci` e a etapa temporária de upload do lockfile foi removida.
